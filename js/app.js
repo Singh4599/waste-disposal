@@ -34,7 +34,7 @@ const SAMPLE_TIMES = [
 function generateHistoricalRecords() {
   const generated = [];
   const start = new Date(2026, 3, 1); // April 1, 2026
-  const end = new Date(2026, 9, 19);   // October 19, 2026
+  const end = new Date(); // Always today
 
   let cur = new Date(start);
   let id = 1;
