@@ -39,6 +39,8 @@ window.setActiveUnit = function(unit) {
   // Update hero pill
   const heroLbl = document.getElementById('hero-unit-lbl');
   if (heroLbl) heroLbl.textContent = unit;
+  // Re-render table so time column updates
+  renderTable();
 };
 
 function initUnitToggle() {
@@ -57,6 +59,29 @@ const SAMPLE_TIMES = [
   '09.05 AM', '08.50 AM', '09.00 AM', '09.10 AM', '09.15 AM', '09.20 AM',
   '09.10 AM', '08.55 AM', '09.10 AM', '08.45 AM', '08.52 AM'
 ];
+
+// Add N minutes to a time string like '8:55 AM' or '09.05 AM'
+function addMinutesToTime(timeStr, mins) {
+  if (!timeStr || timeStr === 'SUNDAY') return timeStr;
+  // Normalize: replace . with : and parse
+  const normalized = timeStr.replace(/\./g, ':').replace(/\s+/g, ' ').trim();
+  const match = normalized.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return timeStr;
+  let h = parseInt(match[1]);
+  let m = parseInt(match[2]);
+  const period = match[3].toUpperCase();
+  // Convert to 24h
+  if (period === 'PM' && h !== 12) h += 12;
+  if (period === 'AM' && h === 12) h = 0;
+  // Add minutes
+  const total = h * 60 + m + mins;
+  let nh = Math.floor(total / 60) % 24;
+  const nm = total % 60;
+  const np = nh < 12 ? 'AM' : 'PM';
+  if (nh > 12) nh -= 12;
+  if (nh === 0) nh = 12;
+  return `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')} ${np}`;
+}
 
 // Generate dataset starting from 1st April 2026 up to today (19th October 2026)
 function generateHistoricalRecords() {
@@ -191,7 +216,7 @@ function renderTable() {
         <td style="font-weight:700; color:var(--text-main);">${escapeHtml(item.wasteType)}</td>
         <td style="white-space:nowrap;"><span class="qty-badge">${escapeHtml(item.quantity)}</span></td>
         <td class="collector-tag">${escapeHtml(item.collectedBy)}</td>
-        <td style="font-weight:600; color:#2563EB; font-family:monospace; font-size:12px;">${escapeHtml(item.time)}</td>
+        <td style="font-weight:600; color:#2563EB; font-family:monospace; font-size:12px;">${escapeHtml(activeUnit === 'Unit 12' ? addMinutesToTime(item.time, 15) : item.time)}</td>
         <td style="font-weight:800; color:#0F172A;">${escapeHtml(item.verifiedBy)}</td>
         <td><span class="status-badge cleaned">${escapeHtml(item.remarks)}</span></td>
         <td style="text-align:center;">
@@ -347,7 +372,7 @@ window.exportToExcel = function() {
         item.wasteType,
         item.quantity,
         item.collectedBy,
-        item.time,
+        activeUnit === 'Unit 12' ? addMinutesToTime(item.time, 15) : item.time,
         item.verifiedBy,
         item.remarks
       ]);
