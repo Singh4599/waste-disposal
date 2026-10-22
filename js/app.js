@@ -26,6 +26,25 @@ let activeMonth = getCurrentMonthKey();
 let records = [];
 let editingId = null;
 
+// ── UNIT 11 / UNIT 12 TOGGLE ──────────────────────────────────────────────────
+const UNIT_STORAGE_KEY = 'lv_waste_active_unit';
+let activeUnit = localStorage.getItem(UNIT_STORAGE_KEY) || 'Unit 11';
+
+window.setActiveUnit = function(unit) {
+  activeUnit = unit;
+  localStorage.setItem(UNIT_STORAGE_KEY, unit);
+  // Update toggle buttons
+  document.getElementById('unit-btn-11')?.classList.toggle('active', unit === 'Unit 11');
+  document.getElementById('unit-btn-12')?.classList.toggle('active', unit === 'Unit 12');
+  // Update hero pill
+  const heroLbl = document.getElementById('hero-unit-lbl');
+  if (heroLbl) heroLbl.textContent = unit;
+};
+
+function initUnitToggle() {
+  setActiveUnit(activeUnit);
+}
+
 // Quantities matching client image: 200 GMS, 100 GMS, 260 GMS, 055 GMS, 150 gms, 120 GMS, 125 GMS, 195 GMS, etc.
 const SAMPLE_QUANTITIES = [
   '200 GMS', '100 GMS', '260 GMS', '055 GMS', '150 gms', '120 GMS',
@@ -109,6 +128,7 @@ function initData() {
   renderMonthTabs();
   renderTable();
   updateKPIs();
+  initUnitToggle();
 }
 
 function saveToStorage() {
