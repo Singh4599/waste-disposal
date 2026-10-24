@@ -553,17 +553,17 @@ window.printLog = function() {
   }
   tr.sun td { background: #f0f0f0; color: #777; font-style: italic; }
   tr:nth-child(even):not(.sun) td { background: #fafafa; }
-  .badge { background: #d4edda; color: #155724; border: 0.5pt solid #155724; padding: 0 4pt; border-radius: 2pt; font-size: 7.5pt; font-weight: 700; }
+  .badge { background: #d4edda; color: #155724; border: 0.5pt solid #155724; padding: 0 4pt; border-radius: 2pt; font-size: 7.5pt; font-weight: 700; white-space: nowrap; }
 
   /* Column widths — 190mm usable (210mm - 20mm body padding)
-     DATE 22mm | TYPE 46mm | QTY 19mm | COLLECTED 46mm | TIME 21mm | VERIFIED 21mm | REMARKS 15mm = 190mm */
+     DATE 22mm | TYPE 41mm | QTY 19mm | COLLECTED 46mm | TIME 21mm | VERIFIED 21mm | REMARKS 20mm = 190mm */
   col.c1 { width: 22mm; }
-  col.c2 { width: 46mm; }
+  col.c2 { width: 41mm; }
   col.c3 { width: 19mm; }
   col.c4 { width: 46mm; }
   col.c5 { width: 21mm; }
   col.c6 { width: 21mm; }
-  col.c7 { width: 15mm; }
+  col.c7 { width: 20mm; }
 </style>
 </head>
 <body>
