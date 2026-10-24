@@ -484,13 +484,145 @@ window.exportToExcel = function() {
 };
 
 window.printLog = function() {
-  // Add printing class so CSS can target cleanly
-  document.body.classList.add('printing');
-  setTimeout(() => {
-    window.print();
-    document.body.classList.remove('printing');
-  }, 100);
+  // Get filtered records for active month
+  const monthPrefix = MONTH_MAP[activeMonth] || '2026-10';
+  const monthRecords = records.filter(r => r.date && r.date.startsWith(monthPrefix));
+
+  // Build table rows HTML
+  const rowsHtml = monthRecords.map(r => {
+    if (r.isSunday) {
+      return `<tr class="sun">
+        <td>${escapeHtml(r.displayDate)}</td>
+        <td colspan="6" style="text-align:center;font-style:italic;color:#888;">SUNDAY — REST DAY</td>
+      </tr>`;
+    }
+    const timeDisplay = activeUnit === 'Unit 12' ? addMinutesToTime(r.time, 15) : r.time;
+    return `<tr>
+      <td>${escapeHtml(r.displayDate)}</td>
+      <td>${escapeHtml(r.wasteType)}</td>
+      <td style="text-align:center;">${escapeHtml(r.quantity)}</td>
+      <td>${escapeHtml(r.collectedBy)}</td>
+      <td style="text-align:center;">${escapeHtml(timeDisplay)}</td>
+      <td style="text-align:center;">${escapeHtml(r.verifiedBy)}</td>
+      <td style="text-align:center;"><span class="badge">${escapeHtml(r.remarks)}</span></td>
+    </tr>`;
+  }).join('');
+
+  const printHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>LV Spices — Waste Disposal Record</title>
+<style>
+  @page { size: A4 portrait; margin: 10mm 8mm 12mm 8mm; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color: #000; background: #fff; }
+
+  /* Header */
+  .header { border: 2px solid #000; padding: 7pt 9pt; margin-bottom: 5pt; }
+  .header h1 { font-size: 13pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5pt; }
+  .header p  { font-size: 7.5pt; color: #444; margin-top: 2pt; }
+  .pills { display: flex; flex-wrap: wrap; gap: 5pt; margin-top: 5pt; }
+  .pill { border: 1px solid #555; padding: 1pt 5pt; font-size: 7pt; border-radius: 3pt; }
+  .pill b { color: #B91C1C; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 4pt; }
+  thead { display: table-header-group; }
+  th {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 4pt 3pt;
+    border: 0.75pt solid #000;
+    font-size: 7pt;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  td {
+    padding: 3pt 3pt;
+    border: 0.5pt solid #999;
+    font-size: 7pt;
+    vertical-align: middle;
+    overflow: hidden;
+    word-break: break-word;
+  }
+  tr.sun td { background: #f3f3f3; color: #777; font-style: italic; }
+  tr:nth-child(even):not(.sun) td { background: #fafafa; }
+  .badge { background: #d4edda; color: #155724; border: 0.5pt solid #155724; padding: 0 3pt; border-radius: 2pt; font-size: 6.5pt; font-weight: 700; }
+
+  /* Column widths — 194mm usable (A4 210 - 16mm margins)
+     DATE        20mm
+     TYPE        45mm
+     QTY         18mm
+     COLLECTED   45mm
+     TIME        20mm
+     VERIFIED    22mm
+     REMARKS     24mm
+     TOTAL      194mm ✓
+  */
+  col.c1 { width: 20mm; }
+  col.c2 { width: 45mm; }
+  col.c3 { width: 18mm; }
+  col.c4 { width: 45mm; }
+  col.c5 { width: 20mm; }
+  col.c6 { width: 22mm; }
+  col.c7 { width: 24mm; }
+
+  .footer { margin-top: 8pt; font-size: 7pt; color: #666; border-top: 0.5pt solid #ccc; padding-top: 4pt; text-align: center; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Waste Disposal Record of L V Spices</h1>
+  <p>Daily Packaging Waste &amp; Residual Spice Powder Handover Log to Municipal BMC Cleaning Staff</p>
+  <div class="pills">
+    <span class="pill">🗑️ Waste Type: <b>Spice Powder &amp; Waste Paper</b></span>
+    <span class="pill">🚛 Collector: <b>BMC Cleaning Workers</b></span>
+    <span class="pill">✅ Verifier: <b>Bhimlal Sharma</b></span>
+    <span class="pill">📅 Cycle: <b>${activeMonth} 2026</b></span>
+    <span class="pill">🏭 Unit: <b>${escapeHtml(activeUnit)}</b></span>
+  </div>
+</div>
+
+<table>
+  <colgroup>
+    <col class="c1"/><col class="c2"/><col class="c3"/><col class="c4"/>
+    <col class="c5"/><col class="c6"/><col class="c7"/>
+  </colgroup>
+  <thead>
+    <tr>
+      <th>DATE</th>
+      <th>TYPE OF WASTE</th>
+      <th>QUANTITY</th>
+      <th>DISPOSAL COLLECTED BY</th>
+      <th>DISPOSAL TIME</th>
+      <th>VERIFIED BY</th>
+      <th>REMARKS</th>
+    </tr>
+  </thead>
+  <tbody>${rowsHtml}</tbody>
+</table>
+
+<div class="footer">
+  L V Spices — Waste Disposal Compliance Register &nbsp;|&nbsp; ${activeMonth} 2026 &nbsp;|&nbsp; ${escapeHtml(activeUnit)} &nbsp;|&nbsp; Printed: ${new Date().toLocaleDateString('en-IN')}
+</div>
+<script>window.onload = function(){ window.print(); setTimeout(function(){ window.close(); }, 800); };<\/script>
+</body>
+</html>`;
+
+  const pw = window.open('', '_blank', 'width=794,height=1123');
+  if (pw) {
+    pw.document.write(printHtml);
+    pw.document.close();
+  } else {
+    // Fallback if popup blocked
+    document.body.classList.add('printing');
+    setTimeout(() => { window.print(); document.body.classList.remove('printing'); }, 100);
+  }
 };
+
 
 
 function escapeHtml(str) {
