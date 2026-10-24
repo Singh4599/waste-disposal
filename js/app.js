@@ -83,7 +83,7 @@ function addMinutesToTime(timeStr, mins) {
   return `${String(nh).padStart(2,'0')}:${String(nm).padStart(2,'0')} ${np}`;
 }
 
-// Generate dataset starting from 1st April 2026 up to today (19th October 2026)
+// Generate dataset starting from 1st April 2026 up to today
 function generateHistoricalRecords() {
   const generated = [];
   const start = new Date(2026, 3, 1); // April 1, 2026
@@ -137,13 +137,98 @@ function generateHistoricalRecords() {
   return generated;
 }
 
+// Extend existing records up to today — fills any missing days without losing edits
+function extendRecordsToToday(existing) {
+  if (!existing.length) return existing;
+
+  // Find last date in stored records
+  const lastDateStr = existing
+    .filter(r => r.date && r.date !== 'SUNDAY')
+    .map(r => r.date)
+    .sort()
+    .pop();
+
+  if (!lastDateStr) return existing;
+
+  const lastDate = new Date(lastDateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  lastDate.setHours(0, 0, 0, 0);
+
+  if (lastDate >= today) return existing; // already up to date
+
+  // Build set of existing dates for fast lookup
+  const existingDates = new Set(existing.map(r => r.date));
+
+  const toAdd = [];
+  let cur = new Date(lastDate);
+  cur.setDate(cur.getDate() + 1); // start from day after last
+
+  let nextId = Math.max(...existing.map(r => r.id || 0)) + 1;
+
+  while (cur <= today) {
+    const y = cur.getFullYear();
+    const m = String(cur.getMonth() + 1).padStart(2, '0');
+    const d = String(cur.getDate()).padStart(2, '0');
+    const dateStr = `${y}-${m}-${d}`;
+    const displayDate = `${d}/${m}/${y}`;
+    const dayOfWeek = cur.getDay();
+
+    if (!existingDates.has(dateStr)) {
+      if (dayOfWeek === 0) {
+        toAdd.push({
+          id: nextId++,
+          date: dateStr,
+          displayDate: displayDate,
+          wasteType: 'SUNDAY',
+          quantity: 'SUNDAY',
+          collectedBy: 'SUNDAY',
+          time: 'SUNDAY',
+          verifiedBy: 'SUNDAY',
+          remarks: 'SUNDAY',
+          isSunday: true
+        });
+      } else {
+        const qty = SAMPLE_QUANTITIES[(nextId * 7) % SAMPLE_QUANTITIES.length];
+        const time = SAMPLE_TIMES[(nextId * 5) % SAMPLE_TIMES.length];
+        toAdd.push({
+          id: nextId++,
+          date: dateStr,
+          displayDate: displayDate,
+          wasteType: 'SPICE POWDER & WASTE PAPER',
+          quantity: qty,
+          collectedBy: 'BMC CLEANING WORKERS',
+          time: time,
+          verifiedBy: 'RAJESH',
+          remarks: 'CLEANED',
+          isSunday: false
+        });
+      }
+    }
+
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  if (toAdd.length > 0) {
+    console.log(`[WasteDisposal] Auto-extending: +${toAdd.length} new days up to today`);
+    return [...existing, ...toAdd];
+  }
+  return existing;
+}
+
 function initData() {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
     try {
-      records = JSON.parse(stored);
+      let parsed = JSON.parse(stored);
+      // Always extend to today — fills missing days since last load
+      records = extendRecordsToToday(parsed);
+      if (records.length !== parsed.length) {
+        saveToStorage(); // persist new days
+      }
     } catch (e) {
       records = generateHistoricalRecords();
+      saveToStorage();
     }
   } else {
     records = generateHistoricalRecords();
@@ -155,6 +240,7 @@ function initData() {
   updateKPIs();
   initUnitToggle();
 }
+
 
 function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
@@ -398,8 +484,14 @@ window.exportToExcel = function() {
 };
 
 window.printLog = function() {
-  window.print();
+  // Add printing class so CSS can target cleanly
+  document.body.classList.add('printing');
+  setTimeout(() => {
+    window.print();
+    document.body.classList.remove('printing');
+  }, 100);
 };
+
 
 function escapeHtml(str) {
   if (!str) return '';

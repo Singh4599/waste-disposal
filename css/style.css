@@ -1263,6 +1263,8 @@ html, body {
   @page {
     size: A4 portrait;
     margin: 12mm 14mm 14mm 14mm;
+    /* suppress browser URL / date default headers */
+    margin-top: 12mm;
   }
 
   /* ── Hide everything that isn't content ── */
