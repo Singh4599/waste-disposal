@@ -1255,9 +1255,17 @@ html, body {
 }
 
 /* ==========================================================================
-   9. PRINT STYLESHEET (PRESERVED)
+   9. PRINT STYLESHEET — A4 OPTIMISED
    ========================================================================== */
+
 @media print {
+  /* ── A4 page setup ── */
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 14mm 14mm;
+  }
+
+  /* ── Hide everything that isn't content ── */
   .sidebar,
   .topbar,
   .topbar-actions,
@@ -1267,60 +1275,188 @@ html, body {
   .modal-overlay,
   .toast-box,
   .thb-actions,
-  .hero-spice-artwork {
+  .hero-spice-artwork,
+  .table-header-bar .thb-actions,
+  button,
+  .btn,
+  nav {
     display: none !important;
   }
 
+  /* ── Reset layout for print ── */
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
   body, html {
-    background: #FFFFFF !important;
-    color: #000000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-family: 'Times New Roman', Times, serif !important;
+    font-size: 10pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .app-layout {
     display: block !important;
-  }
-
-  .content-area {
+    margin: 0 !important;
     padding: 0 !important;
   }
 
+  .content-area {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* ── Print header banner ── */
   .hero-info-card {
-    border: 1px solid #000000 !important;
-    background: #FFFFFF !important;
-    color: #000000 !important;
-    padding: 12px !important;
-    box-shadow: none !important;
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+    padding: 8pt 10pt !important;
+    margin-bottom: 6pt !important;
+    page-break-inside: avoid;
   }
 
   .hero-title {
-    color: #000000 !important;
-    font-size: 16px !important;
+    color: #000 !important;
+    font-size: 14pt !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+  }
+
+  .hero-subtitle {
+    color: #333 !important;
+    font-size: 9pt !important;
+    margin-top: 2pt !important;
   }
 
   .hero-pill {
-    border: 1px solid #CCCCCC !important;
-    background: #FFFFFF !important;
+    border: 1px solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 8pt !important;
+    padding: 1pt 5pt !important;
+    border-radius: 3pt !important;
   }
 
+  /* ── Table card ── */
   .table-card {
-    border: 1px solid #000000 !important;
-    box-shadow: none !important;
+    border: 1.5px solid #000 !important;
     border-radius: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: auto;
+    margin-top: 0 !important;
   }
 
-  .data-table th, .data-table td {
-    padding: 6px 8px !important;
-    border: 1px solid #999999 !important;
-    font-size: 11px !important;
+  .table-card-header,
+  .table-header-bar {
+    padding: 5pt 8pt !important;
+    border-bottom: 1px solid #000 !important;
+    background: #fff !important;
+  }
+
+  .table-scroll-wrapper,
+  .table-wrapper {
+    overflow: visible !important;
+  }
+
+  /* ── Data table ── */
+  .data-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9pt !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+
+  .data-table thead {
+    display: table-header-group; /* repeat header on every page */
   }
 
   .data-table th {
-    background: #000000 !important;
-    color: #FFFFFF !important;
+    background: #1a1a1a !important;
+    color: #fff !important;
+    padding: 5pt 6pt !important;
+    border: 1pt solid #000 !important;
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    text-align: left;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
+  .data-table td {
+    padding: 4pt 6pt !important;
+    border: 0.75pt solid #666 !important;
+    font-size: 8.5pt !important;
+    vertical-align: middle !important;
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  .data-table tr {
+    page-break-inside: avoid;
+  }
+
+  /* ── Sunday rows ── */
   .row-sunday td {
-    background: #EEEEEE !important;
-    color: #555555 !important;
+    background: #efefef !important;
+    color: #555 !important;
+    font-style: italic;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Status badges ── */
+  .badge-cleaned,
+  .status-cleaned {
+    background: #d4edda !important;
+    color: #155724 !important;
+    border: 0.5pt solid #155724 !important;
+    padding: 0 4pt !important;
+    border-radius: 2pt !important;
+    font-size: 7.5pt !important;
+    font-weight: 700 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Quantity pill ── */
+  .qty-pill {
+    background: #e8f4fd !important;
+    color: #0d47a1 !important;
+    border: 0.5pt solid #0d47a1 !important;
+    padding: 0 3pt !important;
+    border-radius: 2pt !important;
+    font-size: 7.5pt !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Footer note ── */
+  .print-footer {
+    display: block !important;
+    margin-top: 8pt;
+    font-size: 7.5pt;
+    color: #444;
+    border-top: 0.5pt solid #999;
+    padding-top: 4pt;
+    text-align: center;
+  }
+
+  /* ── Page numbers ── */
+  @page {
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 7pt;
+      font-family: Arial, sans-serif;
+    }
   }
 }
+
