@@ -514,63 +514,56 @@ window.printLog = function() {
 <meta charset="UTF-8"/>
 <title>LV Spices — Waste Disposal Record</title>
 <style>
-  @page { size: A4 portrait; margin: 10mm 8mm 12mm 8mm; }
+  /* @page margin:0 suppresses browser's default date/URL headers & footers */
+  @page { size: A4 portrait; margin: 0; }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 8pt; color: #000; background: #fff; }
+  /* body padding replaces the @page margins so content still has breathing room */
+  html, body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color: #000; background: #fff;
+    padding: 11mm 10mm 11mm 10mm; width: 210mm; }
 
   /* Header */
-  .header { border: 2px solid #000; padding: 7pt 9pt; margin-bottom: 5pt; }
-  .header h1 { font-size: 13pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5pt; }
-  .header p  { font-size: 7.5pt; color: #444; margin-top: 2pt; }
-  .pills { display: flex; flex-wrap: wrap; gap: 5pt; margin-top: 5pt; }
-  .pill { border: 1px solid #555; padding: 1pt 5pt; font-size: 7pt; border-radius: 3pt; }
+  .header { border: 2px solid #000; padding: 8pt 10pt; margin-bottom: 6pt; }
+  .header h1 { font-size: 14pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5pt; }
+  .header p  { font-size: 8.5pt; color: #444; margin-top: 3pt; }
+  .pills { display: flex; flex-wrap: wrap; gap: 5pt; margin-top: 6pt; }
+  .pill { border: 1px solid #555; padding: 1.5pt 6pt; font-size: 8pt; border-radius: 3pt; }
   .pill b { color: #B91C1C; }
 
   /* Table */
-  table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 4pt; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 5pt; }
   thead { display: table-header-group; }
   th {
     background: #1a1a1a;
     color: #fff;
-    padding: 4pt 3pt;
+    padding: 5pt 4pt;
     border: 0.75pt solid #000;
-    font-size: 7pt;
+    font-size: 8pt;
     font-weight: 700;
     text-align: left;
     white-space: nowrap;
     overflow: hidden;
   }
   td {
-    padding: 3pt 3pt;
+    padding: 4pt 4pt;
     border: 0.5pt solid #999;
-    font-size: 7pt;
+    font-size: 8pt;
     vertical-align: middle;
     overflow: hidden;
     word-break: break-word;
   }
-  tr.sun td { background: #f3f3f3; color: #777; font-style: italic; }
+  tr.sun td { background: #f0f0f0; color: #777; font-style: italic; }
   tr:nth-child(even):not(.sun) td { background: #fafafa; }
-  .badge { background: #d4edda; color: #155724; border: 0.5pt solid #155724; padding: 0 3pt; border-radius: 2pt; font-size: 6.5pt; font-weight: 700; }
+  .badge { background: #d4edda; color: #155724; border: 0.5pt solid #155724; padding: 0 4pt; border-radius: 2pt; font-size: 7.5pt; font-weight: 700; }
 
-  /* Column widths — 194mm usable (A4 210 - 16mm margins)
-     DATE        20mm
-     TYPE        45mm
-     QTY         18mm
-     COLLECTED   45mm
-     TIME        20mm
-     VERIFIED    22mm
-     REMARKS     24mm
-     TOTAL      194mm ✓
-  */
-  col.c1 { width: 20mm; }
-  col.c2 { width: 45mm; }
-  col.c3 { width: 18mm; }
-  col.c4 { width: 45mm; }
-  col.c5 { width: 20mm; }
-  col.c6 { width: 22mm; }
-  col.c7 { width: 24mm; }
-
-  .footer { margin-top: 8pt; font-size: 7pt; color: #666; border-top: 0.5pt solid #ccc; padding-top: 4pt; text-align: center; }
+  /* Column widths — 190mm usable (210mm - 20mm body padding)
+     DATE 22mm | TYPE 46mm | QTY 19mm | COLLECTED 46mm | TIME 21mm | VERIFIED 21mm | REMARKS 15mm = 190mm */
+  col.c1 { width: 22mm; }
+  col.c2 { width: 46mm; }
+  col.c3 { width: 19mm; }
+  col.c4 { width: 46mm; }
+  col.c5 { width: 21mm; }
+  col.c6 { width: 21mm; }
+  col.c7 { width: 15mm; }
 </style>
 </head>
 <body>
@@ -604,10 +597,6 @@ window.printLog = function() {
   </thead>
   <tbody>${rowsHtml}</tbody>
 </table>
-
-<div class="footer">
-  L V Spices — Waste Disposal Compliance Register &nbsp;|&nbsp; ${activeMonth} 2026 &nbsp;|&nbsp; ${escapeHtml(activeUnit)} &nbsp;|&nbsp; Printed: ${new Date().toLocaleDateString('en-IN')}
-</div>
 <script>window.onload = function(){ window.print(); setTimeout(function(){ window.close(); }, 800); };<\/script>
 </body>
 </html>`;
