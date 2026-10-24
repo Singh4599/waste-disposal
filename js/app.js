@@ -514,12 +514,11 @@ window.printLog = function() {
 <meta charset="UTF-8"/>
 <title>LV Spices — Waste Disposal Record</title>
 <style>
-  /* @page margin:0 suppresses browser's default date/URL headers & footers */
   @page { size: A4 portrait; margin: 0; }
   * { margin:0; padding:0; box-sizing:border-box; }
-  /* body padding replaces the @page margins so content still has breathing room */
-  html, body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color: #000; background: #fff;
-    padding: 11mm 10mm 11mm 10mm; width: 210mm; }
+  html, body { font-family: Arial, Helvetica, sans-serif; font-size: 9.5pt; color: #000; background: #fff; }
+  /* .wrap centers all content on the A4 sheet */
+  .wrap { width: 190mm; margin: 11mm auto 11mm auto; }
 
   /* Header */
   .header { border: 2px solid #000; padding: 8pt 10pt; margin-bottom: 6pt; }
@@ -555,8 +554,7 @@ window.printLog = function() {
   tr:nth-child(even):not(.sun) td { background: #fafafa; }
   .badge { background: #d4edda; color: #155724; border: 0.5pt solid #155724; padding: 0 4pt; border-radius: 2pt; font-size: 7.5pt; font-weight: 700; white-space: nowrap; }
 
-  /* Column widths — 190mm usable (210mm - 20mm body padding)
-     DATE 22mm | TYPE 41mm | QTY 19mm | COLLECTED 46mm | TIME 21mm | VERIFIED 21mm | REMARKS 20mm = 190mm */
+  /* Column widths — 190mm usable */
   col.c1 { width: 22mm; }
   col.c2 { width: 41mm; }
   col.c3 { width: 19mm; }
@@ -567,6 +565,7 @@ window.printLog = function() {
 </style>
 </head>
 <body>
+<div class="wrap">
 <div class="header">
   <h1>Waste Disposal Record of L V Spices</h1>
   <p>Daily Packaging Waste &amp; Residual Spice Powder Handover Log to Municipal BMC Cleaning Staff</p>
@@ -597,6 +596,7 @@ window.printLog = function() {
   </thead>
   <tbody>${rowsHtml}</tbody>
 </table>
+</div>
 <script>window.onload = function(){ window.print(); setTimeout(function(){ window.close(); }, 800); };<\/script>
 </body>
 </html>`;
